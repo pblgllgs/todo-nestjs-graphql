@@ -2,6 +2,12 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type Todo {
+  id: Int!
+  description: String!
+  done: Boolean!
+}
+
 type Query {
   """Hello World es lo que retorna"""
   hello: String!
@@ -11,4 +17,14 @@ type Query {
 
   """From zero to"""
   randomNumberFromZeroTo(to: Int): Int!
+  todos: [Todo!]!
+  todo(id: Int!): Todo!
+}
+
+type Mutation {
+  createTodo(createTodoInput: CreateTodoInput!): Todo!
+}
+
+input CreateTodoInput {
+  description: String!
 }
