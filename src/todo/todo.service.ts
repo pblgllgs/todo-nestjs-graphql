@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Todo } from './entity/todo.entity';
-import { CreateTodoInput } from './dto/inputs/create-todo.input';
+import { UpdateTodoInput, CreateTodoInput } from './dto/inputs';
 
 @Injectable()
 export class TodoService {
@@ -15,7 +15,7 @@ export class TodoService {
     return this.todos;
   }
 
-  findById(id: number): Todo {
+  findOne(id: number): Todo {
     const todo = this.todos.find((todo) => todo.id === id);
     if (!todo) throw new NotFoundException(`This id dont exist: ${id}`);
     return todo;
@@ -29,5 +29,24 @@ export class TodoService {
     };
     this.todos.push(newTodo);
     return newTodo;
+  }
+
+  updateTodo(updateTodoInput: UpdateTodoInput) {
+    const todo = this.findOne(updateTodoInput.id);
+    if (!todo)
+      throw new NotFoundException(`Todo: ${updateTodoInput.id} is not found`);
+    const index = this.todos.indexOf(todo);
+    const todoUpdated = (this.todos[index] = {
+      ...todo,
+      ...updateTodoInput,
+    });
+    return todoUpdated;
+  }
+
+  deleteTodo(id: number) {
+    const todo = this.findOne(id);
+    if (!todo) throw new NotFoundException(`Todo: ${id} not found`);
+    this.todos = this.todos.filter((todo) => todo.id !== id);
+    return `Todo ${id} deleted successfully`;
   }
 }
