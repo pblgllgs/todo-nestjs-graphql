@@ -17,14 +17,14 @@ type Query {
 
   """From zero to"""
   randomNumberFromZeroTo(to: Int): Int!
-  todos: [Todo!]!
+  todos(status: Boolean): [Todo!]!
   todo(id: Int!): Todo!
 }
 
 type Mutation {
   createTodo(createTodoInput: CreateTodoInput!): Todo!
   updateTodo(updateTodoInput: UpdateTodoInput!): Todo!
-  deleteTodo(id: Int!): String!
+  deleteTodo(id: Int!): Boolean!
 }
 
 input CreateTodoInput {

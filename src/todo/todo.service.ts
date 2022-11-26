@@ -1,17 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Todo } from './entity/todo.entity';
-import { UpdateTodoInput, CreateTodoInput } from './dto/inputs';
-
+import { UpdateTodoInput, CreateTodoInput, StatusArgs } from './dto';
 @Injectable()
 export class TodoService {
   private todos: Todo[] = [
     { id: 1, description: 'Piedra del alma', done: false },
     { id: 2, description: 'Piedra del tiempo', done: true },
-    { id: 3, description: 'Piedra de la realidad', done: false },
+    { id: 3, description: 'Piedra de la realidad', done: true },
     { id: 4, description: 'Piedra del poder', done: false },
   ];
 
-  findAll(): Todo[] {
+  findAll(statusArgs: StatusArgs): Todo[] {
+    const { status } = statusArgs;
+    if (status !== undefined)
+      return this.todos.filter((todo) => todo.done === status);
     return this.todos;
   }
 
@@ -33,8 +35,6 @@ export class TodoService {
 
   updateTodo(updateTodoInput: UpdateTodoInput) {
     const todo = this.findOne(updateTodoInput.id);
-    if (!todo)
-      throw new NotFoundException(`Todo: ${updateTodoInput.id} is not found`);
     const index = this.todos.indexOf(todo);
     const todoUpdated = (this.todos[index] = {
       ...todo,
@@ -43,10 +43,9 @@ export class TodoService {
     return todoUpdated;
   }
 
-  deleteTodo(id: number) {
-    const todo = this.findOne(id);
-    if (!todo) throw new NotFoundException(`Todo: ${id} not found`);
+  deleteTodo(id: number): boolean {
+    this.findOne(id);
     this.todos = this.todos.filter((todo) => todo.id !== id);
-    return `Todo ${id} deleted successfully`;
+    return true;
   }
 }
